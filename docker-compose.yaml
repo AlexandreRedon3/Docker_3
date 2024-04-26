@@ -21,6 +21,8 @@ services:
       - WORDPRESS_DATABASE_PORT_NUMBER=3306
       - WORDPRESS_DATABASE_USER=user_wordpress
       - WORDPRESS_DATABASE_NAME=wordpress
+      - WORDPRESS_USERNAME=admin
+      - WORDPRESS_PASSWORD=admin
     deploy:
       replicas: 2
     networks:
