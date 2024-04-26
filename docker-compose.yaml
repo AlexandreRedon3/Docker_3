@@ -1,0 +1,56 @@
+services:
+  mysql:
+    image: docker.io/bitnami/mysql:8.0
+    volumes:
+      - "mysql_data:/mysql"
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - MYSQL_USER=user_wordpress
+      - MYSQL_DATABASE=wordpress
+    networks:
+      - backend
+  wordpress:
+    image: docker.io/bitnami/wordpress:6
+    volumes:
+      - "wordpress_data:/wordpress"
+    depends_on:
+      - mysql
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - WORDPRESS_DATABASE_HOST=mysql
+      - WORDPRESS_DATABASE_PORT_NUMBER=3306
+      - WORDPRESS_DATABASE_USER=user_wordpress
+      - WORDPRESS_DATABASE_NAME=wordpress
+    deploy:
+      replicas: 2
+    networks:
+      - backend
+
+  redis:
+    image: bitnami/redis:latest
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - /redis_data:/bitnami/redis/data
+    networks:
+      - backend
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - "./nginx.conf:/etc/nginx/nginx.conf"
+    depends_on:
+      - wordpress
+    networks:
+      - backend
+networks:
+  backend:
+volumes:
+  redis_data:
+    driver: local
+  mysql_data:
+    driver: local
+  wordpress_data:
+    driver: local
